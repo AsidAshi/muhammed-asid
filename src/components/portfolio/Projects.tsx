@@ -1,4 +1,22 @@
 import { ArrowUpRight } from "lucide-react";
+import gplayBadge from "@/assets/gplay.webp";
+import appstoreBadge from "@/assets/appstore.webp";
+
+const assetImages = import.meta.glob<{ default: string }>(
+  "/src/assets/*.{png,svg,webp,jpg,jpeg}",
+  { eager: true }
+);
+
+function getAssetUrl(filename?: string): string | null {
+  if (!filename) return null;
+  const cleanName = filename.trim();
+  for (const path in assetImages) {
+    if (path.endsWith(`/${cleanName}`)) {
+      return assetImages[path].default;
+    }
+  }
+  return null;
+}
 
 const projects = [
   {
@@ -133,13 +151,16 @@ export function Projects() {
                       {p.tag}
                     </p>
                     <div className="mt-2 flex items-center gap-3">
-                      {p.appIcon && (
-                        <img
-                          src={`../../src/assets/${p.appIcon.trim()}`}
-                          alt={`${p.name} app icon`}
-                          className="h-8 w-8 rounded object-cover"
-                        />
-                      )}
+                      {(() => {
+                        const iconUrl = getAssetUrl(p.appIcon);
+                        return iconUrl ? (
+                          <img
+                            src={iconUrl}
+                            alt={`${p.name} app icon`}
+                            className="h-8 w-8 rounded object-cover"
+                          />
+                        ) : null;
+                      })()}
                       <h3 className="text-3xl font-semibold tracking-tight text-foreground">
                         {p.name}
                       </h3>
@@ -164,21 +185,24 @@ export function Projects() {
                   {p.desc}
                 </p>
                 <div className="mt-auto flex flex-wrap items-end gap-6">
-                  {p.siteLink && p.siteIcon && (
-                    <a
-                      href={p.siteLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="transition-transform hover:scale-105 "
-                      title="Visit Website"
-                    >
-                      <img
-                        src={`../../src/assets/${p.siteIcon.trim()}`}
-                        alt="Website"
-                        className="h-7 w-auto rounded object-cover border border-border/30"
-                      />
-                    </a>
-                  )}
+                  {p.siteLink && (() => {
+                    const siteIconUrl = getAssetUrl(p.siteIcon);
+                    return siteIconUrl ? (
+                      <a
+                        href={p.siteLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="transition-transform hover:scale-105"
+                        title="Visit Website"
+                      >
+                        <img
+                          src={siteIconUrl}
+                          alt="Website"
+                          className="h-7 w-auto rounded object-cover border border-border/30"
+                        />
+                      </a>
+                    ) : null;
+                  })()}
                   {p.playstoreLink && (
                     <a
                       href={p.playstoreLink}
@@ -188,9 +212,9 @@ export function Projects() {
                       title="Get it on Google Play"
                     >
                       <img
-                        src="../../src/assets/gplay.webp"
+                        src={gplayBadge}
                         alt="Play Store"
-                        className="h-5   w-auto object-contain"
+                        className="h-5 w-auto object-contain"
                       />
                     </a>
                   )}
@@ -203,9 +227,9 @@ export function Projects() {
                       title="Download on the App Store"
                     >
                       <img
-                        src="../../src/assets//appstore.webp"
+                        src={appstoreBadge}
                         alt="App Store"
-                        className="h-5  w-auto object-contain"
+                        className="h-5 w-auto object-contain"
                       />
                     </a>
                   )}
